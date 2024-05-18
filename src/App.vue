@@ -14,13 +14,22 @@ let todos = reactive([
   { id: nanoid(), title: '开车', done: true },
   { id: nanoid(), title: '睡觉', done: false }
 ])
-
+//提交功能
 emitter.on("sendTitleData",(Newtitle) => {
-  console.log(Newtitle)
-  
   let obj:any = { id: nanoid(), title:Newtitle, done: false }
   todos.push(obj)
-  console.log(todos);
+})
+//删除功能
+emitter.on("delTodo",(delData:any) => {
+  let {id,index} = delData
+  // console.log(id,index);
+  // for (const key in todos) {
+  //   // if (id === todos[key].id) {
+  //   //   console.log(todos[key],index);
+  //   //   todos.splice(index,1)
+  //   // }
+  // }
+  console.log(todos.filter(item => item.id != id));
   
 })
 </script>

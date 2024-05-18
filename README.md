@@ -1,32 +1,38 @@
-# todoLists
+## todoLists
 
-This template should help get you started developing with Vue 3 in Vite.
+学习vue3练手小demo
 
-## Recommended IDE Setup
+todolist待办事项管理
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+### 为什么选用vue3
 
-## Type Support for `.vue` Imports in TS
+这个本应该是vue2就做的小demo，因为拖延症的原因
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+一直拖到学习完vue3，索性直接用vue3写
 
-## Customize configuration
+顺便可以检验一下vue3的学习成果
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+### 项目启动
 
-## Project Setup
+#### 进入项目文件夹
 
-```sh
-npm install
+```node
+cd todoLists
 ```
 
-### Compile and Hot-Reload for Development
+#### 安装依赖
+
+```sh
+npm i
+```
+
+#### 运行项目
 
 ```sh
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+#### 项目打包
 
 ```sh
 npm run build
