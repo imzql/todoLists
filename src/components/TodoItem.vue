@@ -3,7 +3,7 @@
     <label>
       <!-- 如下代码也能实现功能，但是不太推荐，因为有点违反原则，因为修改了props -->
       <!-- <input type="checkbox" v-model="todo.done"/> -->
-      <input type="checkbox" :checked="item.done == true"/> &nbsp;
+      <input type="checkbox" :checked="item.done" @click="changeCheck"/> &nbsp;
       <span>{{ item.title }}</span>
     </label>
     <button class="btn btn-danger" @click="del">删除</button>
@@ -19,6 +19,11 @@ let props = defineProps(['item'])
 // 删除提交数据
 function del(){
     emitter.emit("delTodo",props.item)
+}
+// 点击勾选框改变done的值
+function changeCheck(){
+    props.item.done = !props.item.done
+    emitter.emit("changeCheck",props.item)
 }
 
 

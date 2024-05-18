@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive,toRefs } from 'vue'
+import { ref, reactive,toRefs,computed,watch } from 'vue'
 import { nanoid } from "nanoid"
 //注册组件
 import TodoHeaderVue from '@/components/TodoHeader.vue'
@@ -17,7 +17,7 @@ let todos:any = reactive([
 //提交功能
 emitter.on("sendTitleData",(Newtitle) => {
   let obj:any = { id: nanoid(), title:Newtitle, done: false }
-  todos.push(obj)
+  todos.unshift(obj)
 })
 //删除功能
 emitter.on("delTodo",(delData:any) => {
@@ -28,6 +28,58 @@ emitter.on("delTodo",(delData:any) => {
     todos.splice(index, 1)
   }
 })
+//勾选功能
+emitter.on("changeCheck",(item:any) => {
+  todos.forEach((element:any) => {
+    if(element.id == item.id){
+      element.done = item.done
+    }
+  })
+})
+//全选功能
+emitter.on("ischeckAll",(value:any) => {
+  if(value){
+    todos.forEach((item:any) => {
+      item.done = value
+    })
+  }else{
+    todos.forEach((item:any) => {
+      item.done = value
+    })
+  }
+  
+})
+
+/**
+ * 如果全选所有按钮，默认勾选全选
+ */
+let total =computed(() => {
+  return todos.length
+})
+
+let autoClickAll = computed(() => {
+  return todos.reduce((pre:any,todo:any)=> pre += (todo.done ? 1 : 0)
+  ,0)
+})
+
+let returntrue = computed(() => {
+  return total.value == autoClickAll.value
+})
+let all = watch(returntrue,(newVal) => {
+    emitter.emit('autoIsTrue',newVal)
+})
+/**
+ * 
+ */
+// 删除已完成的待办事项
+function deleteCompleted() {
+    // 遍历todos数组，使用splice删除done为true的项
+    for (let i = todos.length - 1; i >= 0; i--) {
+    if (todos[i].done) {
+      todos.splice(i, 1);
+    }
+  }
+}
 </script>
 
 <template>
@@ -36,7 +88,7 @@ emitter.on("delTodo",(delData:any) => {
       <div class="todo-wrap">
         <TodoHeaderVue />
         <TodoListVue :todos="todos"/>
-        <TodoFooter />
+        <TodoFooter @deleteCompleted="deleteCompleted" :total="total" :autoClickAll="autoClickAll" />
       </div>
     </div>
   </div>

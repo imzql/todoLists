@@ -2,7 +2,6 @@
     <ul class="todo-main">
         <TodoItemVue  v-for="(item,index) in todos" :item="item"/>
     </ul>
-    {{ todos }}
 </template>
 
 <script setup lang="ts">

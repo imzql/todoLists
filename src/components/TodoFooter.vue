@@ -1,18 +1,30 @@
 <template>
    <div class="todo-footer" >
     <label>
-      <!-- <input type="checkbox" :checked="isAll" @change="checkAll"/> -->
-      <input type="checkbox" />
+      <input type="checkbox" :checked="isAll" @click="checkAll"/>
     </label>
     <span>
-      <span>已完成{{  }}</span> / 全部{{  }}
+      <span>已完成 ({{ autoClickAll }})</span> / 全部 ({{ total }})
     </span>
-    <button class="btn btn-danger">清除已完成任务</button>
+    <button class="btn btn-danger" @click="$emit('deleteCompleted')">清除已完成任务</button>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref,defineProps } from 'vue'
+import emitter from '@/utils/emitter'
 
+let isAll = ref(false)
+
+function checkAll(){
+  isAll.value = !isAll.value
+  emitter.emit("ischeckAll",isAll.value)
+}
+emitter.on('autoIsTrue',(val:any) => {
+    isAll.value = val
+})
+
+defineProps(['autoClickAll','total'])
 </script>
 
 <style scoped>
