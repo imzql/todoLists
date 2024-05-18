@@ -43,3 +43,6 @@ npm run build
 https://todo.5b2.cn
 
 ### 遇到的问题
+
+#### 1.使用reactive定义对象类型的响应式数据，对属性重新赋值，失去响应式
+

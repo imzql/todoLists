@@ -8,7 +8,7 @@ import TodoFooter from '@/components/TodoFooter.vue'
 //引入emitter
 import emitter from './utils/emitter'
 //数据
-let todos = reactive([
+let todos:any = reactive([
   { id: nanoid(), title: '抽烟', done: true },
   { id: nanoid(), title: '喝酒', done: false },
   { id: nanoid(), title: '开车', done: true },
@@ -21,16 +21,12 @@ emitter.on("sendTitleData",(Newtitle) => {
 })
 //删除功能
 emitter.on("delTodo",(delData:any) => {
-  let {id,index} = delData
-  // console.log(id,index);
-  // for (const key in todos) {
-  //   // if (id === todos[key].id) {
-  //   //   console.log(todos[key],index);
-  //   //   todos.splice(index,1)
-  //   // }
-  // }
-  console.log(todos.filter(item => item.id != id));
-  
+  //对接受的数据结构赋值
+  let { id } = delData
+  const index = todos.findIndex((item:any) => item.id === id)
+  if (index !== -1) {
+    todos.splice(index, 1)
+  }
 })
 </script>
 

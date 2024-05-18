@@ -3,8 +3,8 @@
     <label>
       <!-- 如下代码也能实现功能，但是不太推荐，因为有点违反原则，因为修改了props -->
       <!-- <input type="checkbox" v-model="todo.done"/> -->
-      <input type="checkbox" :checked="done == true"/> &nbsp;
-      <span>{{ title }}</span>
+      <input type="checkbox" :checked="item.done == true"/> &nbsp;
+      <span>{{ item.title }}</span>
     </label>
     <button class="btn btn-danger" @click="del">删除</button>
   </li>
@@ -15,12 +15,10 @@ import { defineProps,toRefs,ref } from 'vue'
 // 引入mitt
 import emitter from '@/utils/emitter'
 // 接收数据
-let props = defineProps(['data'])
-// 结构赋值
-let {data:{item:{id,title,done},index}} = props
+let props = defineProps(['item'])
 // 删除提交数据
 function del(){
-    emitter.emit("delTodo",{id,index})
+    emitter.emit("delTodo",props.item)
 }
 
 
