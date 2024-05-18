@@ -40,6 +40,6 @@ npm run build
 
 ### 项目预览
 
-[https://todo.5b2.cn/]: 点我预览	"点我"
+https://todo.5b2.cn
 
 ### 遇到的问题
