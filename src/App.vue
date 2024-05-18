@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive,toRefs } from 'vue'
 import { nanoid } from "nanoid"
 //注册组件
-import TodoHeaderVue from './components/TodoHeader.vue'
-import TodoListVue from './components/TodoList.vue'
-import TodoFooter from './components/TodoFooter.vue'
+import TodoHeaderVue from '@/components/TodoHeader.vue'
+import TodoListVue from '@/components/TodoList.vue'
+import TodoFooter from '@/components/TodoFooter.vue'
+//引入emitter
+import emitter from './utils/emitter'
 //数据
 let todos = reactive([
   { id: nanoid(), title: '抽烟', done: true },
@@ -13,7 +15,14 @@ let todos = reactive([
   { id: nanoid(), title: '睡觉', done: false }
 ])
 
-
+emitter.on("sendTitleData",(Newtitle) => {
+  console.log(Newtitle)
+  
+  let obj:any = { id: nanoid(), title:Newtitle, done: false }
+  todos.push(obj)
+  console.log(todos);
+  
+})
 </script>
 
 <template>

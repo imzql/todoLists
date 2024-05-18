@@ -6,12 +6,12 @@
       <input type="checkbox" :checked="done == true"/> &nbsp;
       <span>{{ title }}</span>
     </label>
-    <button class="btn btn-danger">删除</button>
+    <button class="btn btn-danger" @keyup="">删除</button>
   </li>
 </template>
 
 <script setup lang="ts">
-import { defineProps,toRefs } from 'vue'
+import { defineProps,toRefs,ref } from 'vue'
 // 引入mitt
 import emitter from '@/utils/emitter'
 // 接收数据
@@ -19,7 +19,7 @@ let props = defineProps(['data'])
 // 结构赋值
 let {data:{item:{id,title,done},index}} = props
 
-emitter.emit("sendData")
+// emitter.emit("sendData",)
 
 
 

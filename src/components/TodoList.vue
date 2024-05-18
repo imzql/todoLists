@@ -1,7 +1,6 @@
 <template>
-    <ul class="todo-main"><br>
+    <ul class="todo-main">
         <TodoItemVue  v-for="(item,index) in todos" :data="{item,index}"/>
-        <!-- {{ todos }} -->
     </ul>
 </template>
 
@@ -21,6 +20,8 @@ defineProps(['todos'])
     border: 1px solid #ddd;
     border-radius: 2px;
     padding: 0px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .todo-empty {
