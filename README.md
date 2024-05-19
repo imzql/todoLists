@@ -215,3 +215,360 @@ function sendToy(){
 }
 ```
 
+#### 4.在vue3 props是只读的，不能在子组件直接修改，会严重破坏vue设计原则
+
+数据我在app.vue设置，通过props传值到，todolist.vue，再通过todolist.vue传值到todoitem.vue，层层传值，在todoitems组件我接收到了App.vue组件的值，通过 
+
+```
+let props = defineProps(['item'])
+```
+
+设置变量props接受defineprops传来的对象，因为是引用类型，当时直接修改对象内部的属性来实现对传入 `props` 的修改
+
+代码如下
+
+```
+// 点击勾选框改变done的值
+function changeCheck(){
+    props.item.done = !props.item.done
+    emitter.emit("changeCheck",props.item)
+}
+```
+
+其中
+
+```
+props.item.done = !props.item.done
+```
+
+虽然达到了效果，但是直接修改了app组件传来的值，但是不利于后期维护，这里并不推荐这种写法
+
+##### 推荐做法
+
+推荐的做法是通过向父组件发送事件，父组件来修改 `props` 的值。这样可以确保数据的流向是单向的，从而保持数据管理的清晰和可维护性
+
+```
+<template>
+  <li>
+    <label>
+      <!-- 使用事件来通知父组件修改数据 -->
+      <input type="checkbox" :checked="item.done" @click="toggleDone" /> &nbsp;
+      <span>{{ item.title }}</span>
+    </label>
+    <button class="btn btn-danger" @click="del">删除</button>
+  </li>
+</template>
+
+<script setup lang="ts">
+import { defineProps } from 'vue';
+import emitter from '@/utils/emitter';
+
+const props = defineProps({
+  item: {
+    type: Object,
+    required: true
+  }
+});
+
+function del() {
+  emitter.emit("delTodo", props.item);
+}
+
+function toggleDone() {
+  emitter.emit("changeCheck", { ...props.item, done: !props.item.done });
+}
+</script>
+
+```
+
+##### 资料解释
+
+1. **单向数据流原则**：在 Vue 中，数据流应该是单向的。父组件通过 `props` 向子组件传递数据，子组件通过事件向父组件传递修改请求。
+2. **引用类型的修改**：在 JavaScript 中，对象是引用类型，所以直接修改对象的属性实际上是修改了引用本身。这种做法虽然可行，但破坏了 Vue 的单向数据流原则，可能导致数据流混乱，难以维护。
+3. **事件通信**：通过事件通信让父组件来处理数据的修改，可以保持数据流的清晰和可维护性。
+
+通过以上的改进，可以确保数据流符合 Vue 的设计理念，增强代码的可读性和可维护性
+
+#### 一些操作数组方法总结
+
+##### map()
+
+一般参数是一个回调函数
+
+map() 的返回值是一个新的数组，新数组中的元素为 “原数组调用函数处理过后的值”
+
+```
+const array = [2, 3, 4, 4, 5, 6]
+
+console.log("array",array)
+const map = array.map(x => {
+    if (x == 4) {
+        return x * 2
+    }
+    return x
+})
+
+console.log("map",map)
+
+```
+
+###### 参数解释
+
+```
+array.map((item,index,arr)=>{
+	//item是操作的当前元素
+	//index是操作元素的下表
+	//arr是需要被操作的元素
+	//具体需要哪些参数 就传入那个
+})
+```
+
+###### 例子详解
+
+```
+ const array = [2, 3, 4, 4, 5, 6]
+ console.log("原数组array为",array)
+ const map2=array.map((item,index,arr)=>{
+            console.log("操作的当前元素",item)
+            console.log("当前元素下标",index)
+            console.log("被操作的元素",arr)
+            //对元素乘以2
+            return item*2
+ })
+ console.log("处理之后先产生的数组map",map2)
+```
+
+###### 总结
+
+map()方法经常拿来遍历数组，但是不改变原数组，但是会返回一个新的数组
+
+##### filter()
+
+filter用于对数组进行**过滤**。
+
+它创建一个新数组，新数组中的元素是通过检查指定数组中符合条件的所有元素。
+
+注意：filter()不会对空数组进行检测、不会改变原始数组
+
+```
+Array.filter(function(currentValue, indedx, arr), thisValue)
+```
+
+其中，函数 function 为必须，数组中的每个元素都会执行这个函数。且如果返回值为 true，则该元素被保留；
+函数的第一个参数 currentValue 也为必须，代表当前元素的值。
+
+###### 实例
+
+返回数组nums中所有大于5的元素
+
+```
+let nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+let res = nums.filter((num) => {
+  return num > 5;
+});
+
+console.log(res);  // [6, 7, 8, 9, 10]
+```
+
+##### forEach()
+
+主要功能是遍历数组
+
+就是 for 循环的加强版，该语句需要一个回调函数，作为参数。回调函数的形参，依次为，value：遍历的数组内容；index：对应的数组索引，array：数组本身
+
+```
+<script type="text/javascript">
+	// 分别对应：数组元素，元素的索引，数组本身
+	var arr = ['a','b','c'];	
+	arr.forEach(function(value,index,array){
+		console.log(value);
+		console.log(index);
+		console.log(array);
+		})
+</script>
+```
+
+###### 总结
+
+**for 循环比较步骤多比较复杂，forEach 循环比较简单好用，不容易出错**
+
+##### reduce()
+
+###### 语法
+
+```
+arr.reduce(function(prev,cur,index,arr){
+...
+}, init);
+```
+
+其中，
+**arr** 表示原数组；
+**prev** 表示上一次调用回调时的返回值，或者初始值 init;
+**cur** 表示当前正在处理的数组元素；
+**index** 表示当前正在处理的数组元素的索引，若提供 init 值，则索引为0，否则索引为1；
+**init** 表示初始值。
+
+###### 实例
+
+先提供一个原始数组：
+
+```
+var arr = [3,9,4,3,6,0,9];
+```
+
+###### 1. 求数组项之和
+
+```
+var sum = arr.reduce(function (prev, cur) {
+    return prev + cur;
+},0);
+```
+
+由于传入了初始值0，所以开始时prev的值为0，cur的值为数组第一项3，相加之后返回值为3作为下一轮回调的prev值，然后再继续与下一个数组项相加，以此类推，直至完成所有数组项的和并返回。
+
+###### 2. 求数组项最大值
+
+```
+var max = arr.reduce(function (prev, cur) {
+    return Math.max(prev,cur);
+});
+```
+
+由于未传入初始值，所以开始时prev的值为数组第一项3，cur的值为数组第二项9，取两值最大值后继续进入下一轮回调。
+
+###### 3. 数组去重
+
+```
+var newArr = arr.reduce(function (prev, cur) {
+    prev.indexOf(cur) === -1 && prev.push(cur);
+    return prev;
+},[]);
+```
+
+```tex
+实现的基本原理如下：
+
+① 初始化一个空数组
+② 将需要去重处理的数组中的第1项在初始化数组中查找，如果找不到（空数组中肯定找不到），就将该项添加到初始化数组中
+③ 将需要去重处理的数组中的第2项在初始化数组中查找，如果找不到，就将该项继续添加到初始化数组中
+④ ……
+⑤ 将需要去重处理的数组中的第n项在初始化数组中查找，如果找不到，就将该项继续添加到初始化数组中
+⑥ 将这个初始化数组返回
+```
+
+##### splice()
+
+该方法有3个参数
+
+```
+splice(index,len,[item])
+```
+
+其中，
+
+index:数组开始下标 
+
+len: 替换/删除的长度 
+
+item:替换的值，删除操作的话 item为空即可
+
+###### splice作用
+
+删除元素/插入元素/替换元素，该方法会改变原始数组
+
+###### 作用1：删除元素 — [item]为0
+
+```
+arr.splice(1,1) //[‘1’,‘3’,‘4’]
+
+arr.splice(1,0) //[‘1’,‘2’,‘3’,‘4’]
+
+arr.splice(1,2) //[‘1’,‘4’]
+```
+
+###### 作用2：替换元素 — item为替换的值
+
+```
+arr.splice(1,1,‘x’) //[‘1’,‘x’,‘3’,‘4’] 替换起始下标为1，长度为1的值为x’
+
+arr.splice(1,2,‘y’) //[‘1’,‘y’’,‘4’] 替换起始下标为1，长度为2的两个值为‘y’
+
+arr.splice(1,2,‘x’,‘y’) //[‘1’,‘x’,‘y’,‘4’] 替换起始下标为1，长度为2的两个值
+```
+
+###### 作用3：插入元素 — len设置为0，item为添加的值
+
+```
+arr.splice(1,0,‘x’) //[‘1’,‘x’,‘2’,‘3’,‘4’]
+
+arr.splice(1,0, ‘x’, ‘y’, ‘z’) //[‘1’,‘x’, ‘y’, ‘z’,‘2’,‘3’,‘4’]
+```
+
+##### findIndex()
+
+###### 用法
+
+`findIndex()` 方法返回数组中通过测试的第一个元素的索引（作为函数提供）。
+
+`findIndex()` 方法对数组中存在的每个元素执行一次函数：
+
+- 如果找到函数返回 true 值的数组元素，则 findIndex() 返回该数组元素的索引（并且不检查剩余值）
+- 否则返回 -1
+
+**注释：**`findIndex()` 不会为没有值的数组元素执行函数。
+
+**注释：**`findIndex()` 不会改变原始数组。
+
+###### 语法
+
+```
+array.findIndex(function(currentValue, index, arr), thisValue)
+```
+
+| *currentValue* | 必需。当前元素的值。         |
+| -------------- | ---------------------------- |
+| *index*        | 可选。当前元素的数组索引。   |
+| *arr*          | 可选。当前元素所属的数组对象 |
+
+| *thisValue* | 可选。要传递给函数以用作其 "this" 值的值。如果此参数为空，则值 "undefined" 将作为其 "this" 值传递 |
+| ----------- | ------------------------------------------------------------ |
+
+###### 用例
+
+获取数组中第一个值等于或大于 18 的元素的索引：
+
+```
+var ages = [3, 10, 18, 20];
+
+function checkAdult(age) {
+  return age >= 18;
+}
+
+function myFunction() {
+  document.getElementById("demo").innerHTML = ages.findIndex(checkAdult);
+}
+```
+
+获取数组中第一个值高于特定数字的元素的索引：
+
+```
+<p>Minimum age: <input type="number" id="ageToCheck" value="18"></p>
+<button onclick="myFunction()">Try it</button>
+
+<p>Any ages above: <span id="demo"></span></p>
+
+<script>
+var ages = [4, 12, 16, 20];
+
+function checkAdult(age) {
+  return age >= document.getElementById("ageToCheck").value;
+}
+
+function myFunction() {
+  document.getElementById("demo").innerHTML = ages.findIndex(checkAdult);
+}
+</script>
+```
+
